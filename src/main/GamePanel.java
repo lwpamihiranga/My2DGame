@@ -38,25 +38,45 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread.start();
     }
 
+//    @Override
+//    public void run() {
+//        double drawInterval = 1_000_000_000 / FPS;
+//        double nextDrawTime = System.nanoTime() + drawInterval;
+//        while (gameThread != null) {
+//            System.out.println("The game loop is running!");
+//            update();
+//            repaint();
+//
+//            try {
+//                double remainingTime = nextDrawTime - System.nanoTime();
+//                remainingTime = remainingTime / 1_000_000;
+//                if (remainingTime < 0) {
+//                    remainingTime = 0;
+//                }
+//                Thread.sleep((long) remainingTime);
+//                nextDrawTime += drawInterval;
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
+
     @Override
     public void run() {
         double drawInterval = 1_000_000_000 / FPS;
-        double nextDrawTime = System.nanoTime() + drawInterval;
-        while (gameThread != null) {
-            System.out.println("The game loop is running!");
-            update();
-            repaint();
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
 
-            try {
-                double remainingTime = nextDrawTime - System.nanoTime();
-                remainingTime = remainingTime / 1_000_000;
-                if (remainingTime < 0) {
-                    remainingTime = 0;
-                }
-                Thread.sleep((long) remainingTime);
-                nextDrawTime += drawInterval;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        while (gameThread != null) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+            System.out.println("The game loop is running!");
+            if (delta >= 1) {
+                update();
+                repaint();
+                delta--;
             }
         }
     }
